@@ -1,9 +1,9 @@
 import {Router} from 'express'   
-import passport from 'passport'
+import authorization from '../middleware/authorization.js'
 import {patientBooking} from '../controllers/bookingControllers.js' 
 
 
 const bookingRouter = Router() 
-bookingRouter.get('/', passport.authenticate('jwt', {session: false}), patientBooking) 
+bookingRouter.get('/', authorization, patientBooking) 
 
 export default bookingRouter

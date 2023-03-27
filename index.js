@@ -8,7 +8,7 @@ import bookingRouter from "./routes/bookingRoutes.js"
 
 
 dotenv.config() 
-import('./middleware/authorization.js')
+
 
 const app = express() 
 

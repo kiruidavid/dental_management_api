@@ -1,22 +1,20 @@
-import passport from "passport"; 
-import passportJwt from "passport-jwt"  
-import Patients from "../models/patientsModel.js";
+import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv'  
 
-const ExtractJwt = passportJwt.ExtractJwt 
-const StrategyJwt = passportJwt.Strategy  
+dotenv.config()
 
-passport.use(
-    new StrategyJwt(
-        {
-        jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), 
-        secretOrKey: process.env.ACCESS_TOKEN 
-        }, 
-     function(jwtPayload, done){
-        return Patients.findOne({ where: {id: jwtPayload.id}}).then((user) => {
-            return done(null, user)
-        }).catch((err) => {
-            return done(err)
-        })
+const authorization =  (req,res,next) => {
+    try{
+     const jwtToken = req.header("token") 
+     if(!jwtToken){
+        return res.status(403).json("Not Authorize")
+     } 
+     const payload = jwt.verify(jwtToken, process.env.REFRESH_TOKEN) 
+     req.user = payload.user
+    } catch(error){ 
+        return res.json({message: error})
+
     } 
-    )
-)
+    next()
+} 
+export default authorization
