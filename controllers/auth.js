@@ -34,13 +34,17 @@ export const login = async(req,res) => {
     const {phone_number, password} = req.body
     let patient =  await Patients.findOne({ where: { phone_number: phone_number}}) 
     if(!patient) res.json({message: "Patient does not exist with that phone number"}) 
+
+    
+    
     bcrypt.compare(password, patient.password).then((match) => {
         if(!match){
             res.json({message: "Phone number and password do not match"})
         } else { 
+            const {first_name, last_name} = patient
             let tokens = jwtTokens(patient) 
             res.cookie('refresh_token', tokens.refreshToken, {httpOnly: true})
-            res.json(tokens)
+            res.json({data: {first_name,last_name,phone_number} })
         } 
         
 
@@ -49,4 +53,7 @@ export const login = async(req,res) => {
     })
 
     
+} 
+export const logout = (req,res) => {
+   res.clearCookie('refresh_token').json({message: 'patient is succesfully logged out'})
 }
